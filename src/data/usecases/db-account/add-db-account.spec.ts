@@ -93,7 +93,7 @@ describe('DbAddAccount Usecase', () => {
       password: 'hashed_password'
     })
   })
-  test('Should throw if Encrypter thorws', async () => {
+  test('Should throw if AddAccountRepository thorws', async () => {
     const { sut, addAccountRepositoryStub } = makeSut()
 
     jest
@@ -109,5 +109,22 @@ describe('DbAddAccount Usecase', () => {
 
     const promise = sut.add(accountData)
     await expect(promise).rejects.toThrow()
+  })
+  test('Should return an account on success', async () => {
+    const { sut } = makeSut()
+
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email',
+      password: 'valid_password'
+    }
+
+    const account = await sut.add(accountData)
+    expect(account).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email',
+      password: 'hashed_password'
+    })
   })
 })
