@@ -10,6 +10,7 @@ import {
   EmailValidator
 } from './signup-protocols'
 import { SignUpController } from './signUp'
+import { MongoHelper } from '../../../infra/db/mongodb/helpers/mongo-helper'
 
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -57,6 +58,19 @@ const makesut = (): SutTypes => {
 }
 
 describe('SignUp Controller', () => {
+  beforeAll(async () => {
+    await MongoHelper.connect(process.env.MONGO_URL)
+  })
+
+  afterAll(async () => {
+    await MongoHelper.disconnect()
+  })
+
+  beforeEach(async () => {
+    const accountCollection = MongoHelper.getCollection('accounts')
+    await accountCollection.deleteMany({})
+  })
+
   it('Should return 400 if no name is provided', async () => {
     const { sut } = makesut()
     const httpRequest = {
